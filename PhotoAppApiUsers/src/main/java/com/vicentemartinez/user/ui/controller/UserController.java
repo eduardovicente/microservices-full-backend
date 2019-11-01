@@ -17,4 +17,8 @@ public class UserController {
 	public String status() {
 		return "Working on: " + env.getProperty("local.server.port");
 	}
+	
+	public String createUser() {
+		return "create user method is called";
+	}
 }
