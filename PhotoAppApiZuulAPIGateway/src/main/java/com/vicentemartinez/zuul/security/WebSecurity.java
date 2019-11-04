@@ -23,7 +23,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter{
 		.antMatchers(environment.getProperty("api.h2console.url.path")).permitAll() //Allow h2 console for dev purposes
 		.antMatchers(HttpMethod.POST, environment.getProperty("api.login.url.path")).permitAll() //allow login service
 		.antMatchers(HttpMethod.POST, environment.getProperty("api.registration.url.path")).permitAll() //allow registration service
-		.anyRequest().authenticated();//all other requests should be authenticated
+		.anyRequest().authenticated()//all other requests should be authenticated
+		.and().addFilter(new AuthorizationFilterSecurity(authenticationManager(), environment));
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);//NEVER create httpSession
 	}
