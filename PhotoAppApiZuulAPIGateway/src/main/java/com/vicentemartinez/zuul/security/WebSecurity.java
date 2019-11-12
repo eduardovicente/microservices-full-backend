@@ -20,6 +20,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter{
 		http.csrf().disable();
 		http.headers().frameOptions().disable();
 		http.authorizeRequests()
+		.antMatchers(environment.getProperty("api.zuul.actuator.url.path")).permitAll() //Allow zuul actuators
+		.antMatchers(environment.getProperty("api.user.actuator.url.path")).permitAll()//Actuator endpoints for user ws
 		.antMatchers(environment.getProperty("api.h2console.url.path")).permitAll() //Allow h2 console for dev purposes
 		.antMatchers(HttpMethod.POST, environment.getProperty("api.login.url.path")).permitAll() //allow login service
 		.antMatchers(HttpMethod.POST, environment.getProperty("api.registration.url.path")).permitAll() //allow registration service
