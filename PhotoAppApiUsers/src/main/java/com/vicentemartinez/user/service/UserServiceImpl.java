@@ -31,9 +31,9 @@ public class UserServiceImpl implements UserService {
 	public UserDTO createUser(UserDTO userDetails) {
 		userDetails.setUserId(UUID.randomUUID().toString());
 		userDetails.setEncryptedPassword(bCrytPaswordEncoder.encode(userDetails.getPassword()));
-		UserEntity user = modelMapper.mapToObject(userDetails, UserEntity.class);
-		userRepository.save(user);
-		UserDTO returnUserDTO = modelMapper.mapToObject(user, UserDTO.class);
+		UserEntity userEntity = modelMapper.mapToObject(userDetails, UserEntity.class);
+		userRepository.save(userEntity);
+		UserDTO returnUserDTO = modelMapper.mapToObject(userEntity, UserDTO.class);
 		return returnUserDTO;
 	}
 
@@ -52,5 +52,14 @@ public class UserServiceImpl implements UserService {
 			throw new UsernameNotFoundException("Username not found: " + email);
 		return modelMapper.mapToObject(userEntity, UserDTO.class);
 	}
-	
+
+	@Override
+	public UserDTO getUserByUserId(String userId) {
+		UserEntity userEntity = userRepository.findByUserId(userId);
+		if (userEntity == null)
+			throw new UsernameNotFoundException("Username not found: " + userId);
+		UserDTO returnUserDTO = modelMapper.mapToObject(userEntity, UserDTO.class);
+		return returnUserDTO;
+	}
+
 }
