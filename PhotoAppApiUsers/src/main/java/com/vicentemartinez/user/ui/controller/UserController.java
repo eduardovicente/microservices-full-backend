@@ -34,6 +34,7 @@ public class UserController {
 	@Autowired
 	ModelMapperUtil modelMapper;
 
+
 	@GetMapping("/status/check")
 	public String status() {
 		return "Working on: " + env.getProperty("local.server.port");
@@ -48,12 +49,12 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 	}
 
-	@GetMapping(value = "/{userId}", consumes = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE, }, produces = { MediaType.APPLICATION_JSON_VALUE,
+	@GetMapping(value = "/{userId}", produces = { MediaType.APPLICATION_JSON_VALUE,
 					MediaType.APPLICATION_XML_VALUE, })
 	public ResponseEntity<UserResponseModel> getUser(@PathVariable String userId) {
 		UserDTO userDto = userService.getUserByUserId(userId);
 		UserResponseModel userResponseModel = modelMapper.mapToObject(userDto, UserResponseModel.class);
+
 		return ResponseEntity.status(HttpStatus.OK).body(userResponseModel);
 	}
 }
