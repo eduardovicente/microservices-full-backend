@@ -77,12 +77,7 @@ public class UserServiceImpl implements UserService {
 		if (userEntity == null)
 			throw new UsernameNotFoundException("Username not found: " + userId);
 		UserDTO returnUserDTO = modelMapper.mapToObject(userEntity, UserDTO.class);
-		List<AlbumResponseModel> albumsList = null;
-		try {
-			albumsList = albumsServiceClient.getAlbums(userId);
-		} catch (FeignException e) {
-			logger.error(e.getMessage());
-		}
+		List<AlbumResponseModel> albumsList = albumsServiceClient.getAlbums(userId);
 		returnUserDTO.setAlbums(albumsList);
 		return returnUserDTO;
 	}
