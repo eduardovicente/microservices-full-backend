@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
@@ -16,29 +18,31 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.vicentemartinez.user.client.AlbumsServiceClient;
 import com.vicentemartinez.user.model.UserEntity;
 import com.vicentemartinez.user.repository.UserRepository;
 import com.vicentemartinez.user.service.dto.UserDTO;
 import com.vicentemartinez.user.ui.model.AlbumResponseModel;
 import com.vicentemartinez.user.util.ModelMapperUtil;
 
+import feign.FeignException;
+
 @Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	BCryptPasswordEncoder bCrytPaswordEncoder;
+	private BCryptPasswordEncoder bCrytPaswordEncoder;
 
 	@Autowired
-	ModelMapperUtil modelMapper;
+	private ModelMapperUtil modelMapper;
 
 	@Autowired
-	RestTemplate restTemplate;
-	
-	@Autowired
-	Environment env;
+	private AlbumsServiceClient albumsServiceClient;
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public UserDTO createUser(UserDTO userDetails) {
@@ -73,13 +77,7 @@ public class UserServiceImpl implements UserService {
 		if (userEntity == null)
 			throw new UsernameNotFoundException("Username not found: " + userId);
 		UserDTO returnUserDTO = modelMapper.mapToObject(userEntity, UserDTO.class);
-		
-		String albumsUrl = String.format(env.getProperty("albums.url"), userId);
-		
-		ResponseEntity<List<AlbumResponseModel>> albumsListResponse = restTemplate.exchange(albumsUrl, HttpMethod.GET,
-				null, new ParameterizedTypeReference<List<AlbumResponseModel>>() {
-				});
-		List<AlbumResponseModel> albumsList = albumsListResponse.getBody();
+		List<AlbumResponseModel> albumsList = albumsServiceClient.getAlbums(userId);
 		returnUserDTO.setAlbums(albumsList);
 		return returnUserDTO;
 	}
