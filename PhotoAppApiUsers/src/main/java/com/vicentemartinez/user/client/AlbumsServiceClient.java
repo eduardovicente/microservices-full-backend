@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.vicentemartinez.user.ui.model.AlbumResponseModel;
 
 
-@FeignClient(name = "albums-ws")
+@FeignClient(name = "albums-ws", fallback = AlbumsFallback.class)
 public interface AlbumsServiceClient {
 
 	@GetMapping("/users/{id}/albums")
